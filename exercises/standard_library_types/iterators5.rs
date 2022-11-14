@@ -10,7 +10,6 @@
 //
 // Make the code compile and the tests pass.
 
-// I AM NOT DONE
 
 use std::collections::HashMap;
 
@@ -34,7 +33,7 @@ fn count_for(map: &HashMap<String, Progress>, value: Progress) -> usize {
 fn count_iterator(map: &HashMap<String, Progress>, value: Progress) -> usize {
     // map is a hashmap with String keys and Progress values.
     // map = { "variables1": Complete, "from_str": None, ... }
-    todo!();
+    map.values().filter(|&x| *x == value).count()
 }
 
 fn count_collection_for(collection: &[HashMap<String, Progress>], value: Progress) -> usize {
@@ -53,7 +52,10 @@ fn count_collection_iterator(collection: &[HashMap<String, Progress>], value: Pr
     // collection is a slice of hashmaps.
     // collection = [{ "variables1": Complete, "from_str": None, ... },
     //     { "variables2": Complete, ... }, ... ]
-    todo!();
+    collection.into_iter()
+        .map(|x| count_iterator(x, value))
+        .inspect(|x| println!("x={x}"))
+        .sum()
 }
 
 #[cfg(test)]
@@ -79,7 +81,7 @@ mod tests {
     fn count_collection_complete() {
         let collection = get_vec_map();
         assert_eq!(
-            6,
+            5,
             count_collection_iterator(&collection, Progress::Complete)
         );
     }
@@ -115,7 +117,7 @@ mod tests {
         let mut other = HashMap::new();
         other.insert(String::from("variables2"), Complete);
         other.insert(String::from("functions2"), Complete);
-        other.insert(String::from("if1"), Complete);
+        other.insert(String::from("if1"), Some);
         other.insert(String::from("from_into"), None);
         other.insert(String::from("try_from_into"), None);
 

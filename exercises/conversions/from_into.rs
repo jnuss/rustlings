@@ -35,10 +35,57 @@ impl Default for Person {
 // If while parsing the age, something goes wrong, then return the default of Person
 // Otherwise, then return an instantiated Person object with the results
 
-// I AM NOT DONE
+// I AM DONE
 
 impl From<&str> for Person {
     fn from(s: &str) -> Person {
+        eprintln!("Input string: {:?}", s);
+        if s.is_empty() { return Person::default(); }
+        let mut s_iter = s.split(',');
+        let name = s_iter.next().expect("name string should be present even if empty");
+        // if name.is_empty() {
+        //     return Person::default();
+        // } else {
+        //     // name is non-empty, so check for age string
+        //     if let Some(age_string) = s_iter.next() {
+        //         eprintln!("age_string: {:?}", age_string);
+        //         if let Ok(age) = age_string.parse::<usize>() {
+        //             if let None = s_iter.next() {
+        //                 return Person { name: name.to_string(), age };
+        //             } else {
+        //                 return Person::default();
+        //             }
+        //         } else {
+        //             return Person::default();
+        //         }
+        //     } else {
+        //         // no separator found
+        //         return Person::default();
+        //     }
+        // }
+
+        if !name.is_empty() {
+            // name is non-empty, so check for age string
+            if let Some(age_string) = s_iter.next() {
+                eprintln!("age_string: {:?}", age_string);
+                if let Ok(age) = age_string.parse::<usize>() {
+                    if let None = s_iter.next() {
+                        Person { name: name.to_string(), age }
+                    }
+                }
+            }
+        } else {
+            Person::default()
+        }
+
+        // if !name.is_empty() &&
+        //     let Some(age_string) = s_iter.next() &&
+        //     let Ok(age) = age_string.parse::<usize>() &&
+        //     let None = s_iter.next() {
+        //     Person { name: name.to_string(), age }
+        // } else {
+        //     Person::default()
+        // }
     }
 }
 

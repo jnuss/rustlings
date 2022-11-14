@@ -23,7 +23,7 @@ enum IntoColorError {
     IntConversion,
 }
 
-// I AM NOT DONE
+// I AM  DONE
 
 // Your task is to complete this implementation
 // and return an Ok result of inner type Color.
@@ -38,6 +38,23 @@ enum IntoColorError {
 impl TryFrom<(i16, i16, i16)> for Color {
     type Error = IntoColorError;
     fn try_from(tuple: (i16, i16, i16)) -> Result<Self, Self::Error> {
+        // THIS WORKS TOO:
+        // let colors = [tuple.0, tuple.1, tuple.2];
+        // for color in colors {
+        //     if color < 0 || color > 255 {
+        //         return Err(IntoColorError::IntConversion);
+        //     }
+        // }
+        // Ok(Color { red: tuple.0, green: tuple.1, blue: tuple.2})
+
+        // THIS WORKS TOO:
+        // let red = u8::try_from(tuple.0).map_err(|_| IntoColorError::IntConversion)?;
+        // let green = u8::try_from(tuple.1).map_err(|_| IntoColorError::IntConversion)?;
+        // let blue = u8::try_from(tuple.2).map_err(|_| IntoColorError::IntConversion)?;
+        // Ok(Color { red, green, blue })
+
+        let components = [tuple.0, tuple.1, tuple.2];
+        Self::try_from(&components as &[i16])
     }
 }
 
@@ -45,6 +62,36 @@ impl TryFrom<(i16, i16, i16)> for Color {
 impl TryFrom<[i16; 3]> for Color {
     type Error = IntoColorError;
     fn try_from(arr: [i16; 3]) -> Result<Self, Self::Error> {
+        // let mut components: [u8; 3];
+        // for i in 0..3 {
+        //     components[i]= u8::try_from(arr[i]).map_err(|_| IntoColorError::IntConversion)?;
+        // }
+        // Ok(Color {
+        //     red: components[0],
+        //     green: components[1],
+        //     blue: components[2],
+        // })
+
+        
+        //let components: Vec<_> = arr.into_iter().map(|&x| x + 1).collect();
+        //let components: Vec<_> = arr.iter().map(|x: i16| u8::try_from(x)).collect();
+        //Ok(Color { red: 0, green: 0, blue: 0 })
+
+        // THIS WORKS TOO:
+        // let components_result: Result<Vec<_>, _> = arr.iter()
+        //     .map(|&x| u8::try_from(x).map_err(|_| IntoColorError::IntConversion))
+        //     .collect();
+        // let components = components_result?;
+        // Ok(Color {
+        //     red: components[0],
+        //     green: components[1],
+        //     blue: components[2],
+        // })
+
+        // THIS WORKS TOO:
+        //<Color as TryFrom<&[i16]>>::try_from(&arr)
+
+        Self::try_from(&arr as &[i16])
     }
 }
 
@@ -52,6 +99,16 @@ impl TryFrom<[i16; 3]> for Color {
 impl TryFrom<&[i16]> for Color {
     type Error = IntoColorError;
     fn try_from(slice: &[i16]) -> Result<Self, Self::Error> {
+        if slice.len() != 3 { return Err(IntoColorError::BadLen) }
+        let components_result: Result<Vec<_>, _> = slice.iter()
+            .map(|&x| u8::try_from(x).map_err(|_| IntoColorError::IntConversion))
+            .collect();
+        let components = components_result?;
+        Ok(Color {
+            red: components[0],
+            green: components[1],
+            blue: components[2],
+        })
     }
 }
 
